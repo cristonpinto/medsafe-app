@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, AlertCircle, Lock, Mail, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function Login() {
   const navigate = useNavigate();
@@ -30,23 +31,46 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
-
+  
     setIsLoading(true);
     try {
-      // Replace with your actual API call
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulated API call
+      const response = await axios.post('http://localhost:5000/api/auth/login', {
+        email: formData.email,
+        password: formData.password
+      });
+  
       // Handle successful login
+      const { token, user } = response.data;
+      
+      // Store token in localStorage or a more secure storage method
+      localStorage.setItem('token', token);
+      
+      // Store user info if needed
+      localStorage.setItem('user', JSON.stringify(user));
+  
       setSuccess('Sign in successful!');
       setTimeout(() => {
         navigate('/'); // Redirect to dashboard after 2 seconds
       }, 2000);
+
+      
+
     } catch (error) {
-      setErrors({ submit: 'Invalid email or password' });
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        setErrors({ submit: error.response.data.message || 'Invalid email or password' });
+      } else if (error.request) {
+        // The request was made but no response was received
+        setErrors({ submit: 'No response from server. Please try again.' });
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        setErrors({ submit: 'An error occurred. Please try again.' });
+      }
     } finally {
       setIsLoading(false);
     }
   };
-
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({

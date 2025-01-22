@@ -1,6 +1,6 @@
 const User = require('../models/User');
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs'); // Add this for password hashing
 
 exports.signup = async (req, res) => {
   try {
@@ -14,17 +14,16 @@ exports.signup = async (req, res) => {
       emergencyContact,
     } = req.body;
 
-    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    // Hash password
+    // Hash the password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create new user
+    // Create new user with hashed password
     const newUser = new User({
       email,
       password: hashedPassword,
@@ -37,7 +36,6 @@ exports.signup = async (req, res) => {
 
     await newUser.save();
 
-    // Create JWT token
     const token = jwt.sign(
       { userId: newUser._id },
       process.env.JWT_SECRET,
@@ -64,19 +62,17 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Check if user exists
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+      return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Check password
+    // Compare hashed password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid credentials' });
+      return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Create JWT token
     const token = jwt.sign(
       { userId: user._id },
       process.env.JWT_SECRET,
@@ -96,26 +92,5 @@ exports.login = async (req, res) => {
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ message: 'Server error during login' });
-  }
-};
-
-exports.forgotPassword = async (req, res) => {
-  try {
-    const { email } = req.body;
-
-    // Check if user exists
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    // In a real application, you would generate a password reset token
-    // and send it to the user's email. For this example, we'll just
-    // return a success message.
-
-    res.json({ message: 'Password reset instructions sent to email' });
-  } catch (error) {
-    console.error('Forgot password error:', error);
-    res.status(500).json({ message: 'Server error during password reset request' });
   }
 };

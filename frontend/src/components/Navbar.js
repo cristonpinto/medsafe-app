@@ -109,7 +109,7 @@ function Navbar({ toggleSidebar, isSidebarOpen }) {
                     Settings
                   </a>
                   <div className="border-t my-1"></div>
-                  <a href="/logout" className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                  <a href="/login" className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
                     Logout
                   </a>
                 </div>
