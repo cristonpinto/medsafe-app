@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Database connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/medsafe', {
+mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://criston:criston@software-project.7snczzs.mongodb.net/medsafe?retryWrites=true&w=majority&appName=software-project', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
