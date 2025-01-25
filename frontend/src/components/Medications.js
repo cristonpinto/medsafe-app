@@ -19,6 +19,11 @@ import { Add as AddIcon, Delete as DeleteIcon } from '@mui/icons-material';
 
 function PrescriptionForm() {
   const [prescription, setPrescription] = useState({
+    patientName: '',
+    patientId: '',
+    patientDob: null,
+    patientContact: '',
+    patientEmail: '',
     illnessName: '',
     doctorName: '',
     doctorSpecialty: '',
@@ -61,10 +66,37 @@ function PrescriptionForm() {
     setPrescription({ ...prescription, drugs: updatedDrugs });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(prescription);
-    // Here you would typically send the data to your backend
+
+    // Prepare the data for sending
+    const dataToSend = {
+      ...prescription,
+      patientDob: prescription.patientDob ? prescription.patientDob.toISOString().split('T')[0] : null,
+      startDate: prescription.startDate ? prescription.startDate.toISOString().split('T')[0] : null,
+    };
+
+    try {
+      const response = await fetch('http://localhost:5000/api/medications', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(dataToSend),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log('Prescription saved successfully:', result);
+      // You can add code here to handle successful submission (e.g., show a success message, clear the form, etc.)
+    } catch (error) {
+      console.error('Error saving prescription:', error);
+      // You can add code here to handle errors (e.g., show an error message to the user)
+    }
   };
 
   return (
@@ -85,6 +117,53 @@ function PrescriptionForm() {
                 required
               />
             </Grid>
+            <Grid item xs={12} sm={6}>
+  <TextField
+    fullWidth
+    label="Patient Name"
+    name="patientName"
+    value={prescription.patientName}
+    onChange={handleInputChange}
+    required
+  />
+</Grid>
+<Grid item xs={12} sm={6}>
+  <TextField
+    fullWidth
+    label="Patient ID"
+    name="patientId"
+    value={prescription.patientId}
+    onChange={handleInputChange}
+  />
+</Grid>
+<Grid item xs={12} sm={6}>
+  <DatePicker
+    label="Patient Date of Birth"
+    value={prescription.patientDob}
+    onChange={(date) => setPrescription({...prescription, patientDob: date})}
+    renderInput={(params) => <TextField {...params} fullWidth required />}
+  />
+</Grid>
+<Grid item xs={12} sm={6}>
+  <TextField
+    fullWidth
+    label="Patient Contact"
+    name="patientContact"
+    value={prescription.patientContact}
+    onChange={handleInputChange}
+    required
+  />
+</Grid>
+<Grid item xs={12} sm={6}>
+  <TextField
+    fullWidth
+    label="Patient Email"
+    name="patientEmail"
+    value={prescription.patientEmail}
+    onChange={handleInputChange}
+    type="email"
+  />
+</Grid>
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Eye, EyeOff, AlertCircle, Lock, Mail, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { setAuthenticated, updateProfile } from '../features/userSlice';
 
 function Login() {
   const navigate = useNavigate();
@@ -15,6 +17,7 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState('');
+  const dispatch = useDispatch();
 
   const validateForm = () => {
     const newErrors = {};
@@ -45,14 +48,14 @@ function Login() {
       // Store token in localStorage or a more secure storage method
       localStorage.setItem('token', token);
       
-      // Store user info if needed
-      localStorage.setItem('user', JSON.stringify(user));
+      // Update Redux store
+      dispatch(setAuthenticated(true));
+      dispatch(updateProfile(user));
   
       setSuccess('Sign in successful!');
       setTimeout(() => {
         navigate('/'); // Redirect to dashboard after 2 seconds
       }, 2000);
-
       
 
     } catch (error) {

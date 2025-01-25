@@ -1,7 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors'); // Import CORS
+const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
+const medicationsRouter = require('./routes/medications.routes');
+const remindersRouter = require('./routes/reminders.router');
 require('dotenv').config();
 
 const app = express();
@@ -12,6 +14,8 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/medications', medicationsRouter);
+app.use('/api/reminders', remindersRouter);
 
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI)
