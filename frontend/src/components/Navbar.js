@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { 
-  Settings, Bell, Search, ChevronDown
+  Settings, Bell, Search, ChevronDown, Menu, X
 } from 'lucide-react';
 
 function Navbar({ toggleSidebar, isSidebarOpen }) {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const notifications = [
     { id: 1, text: "Medication reminder: Take Aspirin", time: "5 min ago" },
@@ -42,9 +43,9 @@ function Navbar({ toggleSidebar, isSidebarOpen }) {
             </div>
           </div>
 
-          {/* Search Bar */}
-          <div className="flex-1 max-w-xl mx-4">
-            <div className="relative">
+          {/* Search Bar - Hidden on mobile */}
+          <div className="hidden md:flex flex-1 max-w-xl mx-4">
+            <div className="relative w-full">
               <input
                 type="text"
                 className="w-full bg-gray-100 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -54,8 +55,8 @@ function Navbar({ toggleSidebar, isSidebarOpen }) {
             </div>
           </div>
 
-          {/* Right side */}
-          <div className="flex items-center space-x-4">
+          {/* Right side - Hidden on mobile */}
+          <div className="hidden md:flex items-center space-x-4">
             {/* Notifications */}
             <div className="relative">
               <button
@@ -116,10 +117,66 @@ function Navbar({ toggleSidebar, isSidebarOpen }) {
               )}
             </div>
           </div>
+
+          {/* Mobile menu button */}
+          <div className="md:hidden">
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-2 rounded-md text-gray-600 hover:bg-gray-100"
+            >
+              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
+
+        {/* Mobile menu */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden border-t">
+            <div className="px-2 pt-2 pb-3 space-y-1">
+              {/* Mobile Search */}
+              <div className="relative mb-3">
+                <input
+                  type="text"
+                  className="w-full bg-gray-100 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Search medications, interactions..."
+                />
+                <Search className="absolute left-3 top-2.5 text-gray-400" size={20} />
+              </div>
+
+              {/* Mobile Notifications */}
+              <div className="flex items-center px-3 py-2 rounded-md hover:bg-gray-100">
+                <Bell size={20} className="mr-3" />
+                <span>Notifications</span>
+                <span className="ml-auto bg-red-500 text-white text-xs rounded-full px-2 py-1">3</span>
+              </div>
+
+              {/* Mobile Settings */}
+              <a href="/settings" className="flex items-center px-3 py-2 rounded-md hover:bg-gray-100">
+                <Settings size={20} className="mr-3" />
+                <span>Settings</span>
+              </a>
+
+              {/* Mobile Profile */}
+              <div className="flex items-center px-3 py-2 rounded-md hover:bg-gray-100">
+                <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center mr-3">
+                  <span className="text-white text-sm font-medium">JD</span>
+                </div>
+                <span>John Doe</span>
+              </div>
+
+              {/* Mobile Profile Links */}
+              <a href="/profile" className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                View Profile
+              </a>
+              <a href="/login" className="block px-3 py-2 text-sm text-red-600 hover:bg-gray-100">
+                Logout
+              </a>
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   );
 }
 
-export default Navbar;
+export default Navbar;  
